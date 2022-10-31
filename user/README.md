@@ -1,4 +1,4 @@
-# ShareCare User API
+#### ShareCare User API
 
 In order to run the API you'll need to set the following environment variables.
 
