@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: user-deployment
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: user
@@ -13,19 +13,44 @@ spec:
         app: user
     spec:
       containers:
-      - name: charity-pod
-        image: <enter-your-container-registry>/charity:0.1
+      - name: user-pod
+        image: eu.gcr.io/odh-lloyds/userapi:latest
         env:
         - name: DATABASE_HOST
-          value: <enter-your-host>
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: host
+              optional: false
+          #value: "34.89.76.149"
         - name: DATABASE_PORT
-          value: "<enter-your-port>"
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: port
+              optional: false
+          #value: "5432"
         - name: DATABASE_NAME
-          value: charity
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: dbname
+              optional: false
+          #value: postgres
         - name: DATABASE_USERNAME
-          value: <enter-your-username>
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: username
+              optional: false
+          #value: postgres
         - name: DATABASE_PASSWORD
-          value: <enter-your-password>
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: password
+              optional: false
+          #value: hackPassword1!
         ports:
         - containerPort: 3000
         imagePullPolicy: Always
@@ -40,27 +65,26 @@ kind: Service
 metadata:
   name: user-svc
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 3000
   selector:
     app: user
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: user-ingress
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    # nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: <enter-your-host>
-    http:
-      paths:
-      - backend:
-          serviceName: user-svc
-          servicePort: 80
-        path: /users
+#---
+#  apiVersion: networking.k8s.io/v1
+#  kind: Ingress
+#  metadata:
+#    name: user-ingress
+#  spec:
+#    ingressClassName: nginx
+#    rules:
+#    - http:
+#        paths:
+#        - backend:
+#            service:
+ #             name: user-svc
+ #             port:
+ #               number: 80
+ #         path: /users
+ #         pathType: Prefix
