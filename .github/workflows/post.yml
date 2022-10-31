@@ -14,8 +14,8 @@ name: Test, Build and Push Post API to GCR
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+    paths: 'post/**'
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
