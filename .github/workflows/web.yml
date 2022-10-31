@@ -14,8 +14,8 @@ name: Build and Push web to GCR
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
+    paths: 'web/**'
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
